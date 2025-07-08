@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Quote</title>
+  </head>
+  <body>
+    <h1>Update an Existing Quote</h1>
+    <form id="quoteForm">
+      <label for="quoteId">Quote ID:</label>
+      <input type="number" id="quoteId" required />
+      <br />
+
+      <label for="quoteText">Quote:</label>
+      <input type="text" id="quoteText" required />
+      <br />
+
+      <label for="authorName">Author:</label>
+      <input type="text" id="authorName" required />
+      <br />
+
+      <button type="button" onclick="updateQuote()">Update Quote</button>
+    </form>
+
+    <h2>Search for Quote by ID</h2>
+    <input type="number" id="searchId" placeholder="Enter quote ID to search" />
+    <button onclick="searchQuote()">Search</button>
+
+    <script>
+      // Function to search for a quote by ID
+      function searchQuote() {
+        const searchId = document.getElementById("searchId").value;
+        if (!searchId) {
+          alert("Please enter a quote ID.");
+          return;
+        }
+
+        fetch(`http://localhost:4000/quote/${searchId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data) {
+              document.getElementById("quoteId").value = data.id;
+              document.getElementById("quoteText").value = data.quote;
+              document.getElementById("authorName").value = data.author;
+            } else {
+              alert("Quote not found.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching quote:", error);
+            alert("Error fetching quote.");
+          });
+      }
+
+      // Function to update the quote
+      function updateQuote() {
+        const quoteId = document.getElementById("quoteId").value;
+        const quoteText = document.getElementById("quoteText").value;
+        const authorName = document.getElementById("authorName").value;
+
+        if (!quoteId || !quoteText || !authorName) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        const updatedQuote = {
+          quote: quoteText,
+          author: authorName,
+        };
+
+        fetch(`http://localhost:4000/quote/${quoteId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedQuote),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            alert(data.message);
+            // Clear the form after successful update
+            document.getElementById("quoteForm").reset();
+          })
+          .catch((error) => {
+            console.error("Error updating quote:", error);
+            alert("Error updating quote.");
+          });
+      }
+    </script>
+  </body>
+</html>

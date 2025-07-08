@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <form id="quoteForm">
+      <label for="quoteId">ID:</label>
+      <input type="number" id="quoteId" />
+      <br />
+
+      <label for="quoteText">Quote:</label>
+      <input type="text" id="quoteText" />
+      <br />
+
+      <label for="authorName">Author:</label>
+      <input type="text" id="authorName" />
+      <br />
+
+      <button type="button" onclick="addQuote()">Add Quote</button>
+    </form>
+
+    <script>
+      // Function to handle the form submission
+      function addQuote() {
+        // Get the form values
+        const quoteId = document.getElementById("quoteId").value;
+        const quoteText = document.getElementById("quoteText").value;
+        const authorName = document.getElementById("authorName").value;
+
+        // Validate that all fields are filled
+        if (!quoteId || !quoteText || !authorName) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        // Prepare the new quote object
+        const newQuote = {
+          id: parseInt(quoteId),
+          quote: quoteText,
+          author: authorName,
+        };
+
+        // Send the new quote to the backend
+        fetch("http://localhost:4000/quote", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newQuote),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            // Handle the server response
+            alert(data.message);
+            // Clear the form fields after successful submission
+            document.getElementById("quoteForm").reset();
+          })
+      }
+    </script>
+  </body>
+</html>
